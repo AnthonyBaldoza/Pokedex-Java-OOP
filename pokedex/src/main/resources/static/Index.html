@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokédex — Group 10</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23fff' stroke='%23222' stroke-width='4'/><path d='M2 50 Q2 2 50 2 Q98 2 98 50Z' fill='%23e53935'/><rect x='2' y='46' width='96' height='8' fill='%23222'/><circle cx='50' cy='50' r='12' fill='%23fff' stroke='%23222' stroke-width='4'/><circle cx='50' cy='50' r='5' fill='%23fff'/></svg>">
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+  <body>
+    <!-- THEME TOGGLE -->
+    <!-- THEME TOGGLE -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    </button>
+
+    <!-- AMBIENT BACKGROUND -->
+    <div class="ambient">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen">
+      <div class="loader-ring"><div class="loader-center"></div></div>
+      <div class="loader-text">Initializing Pokédex</div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-main">
+        <a class="logo" href="#">
+          <svg
+            class="logo-icon"
+            viewBox="0 0 36 36"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M3.76,13 A15,15 0 0,1 32.24,13 Z" fill="#e8341a" />
+            <path
+              d="M2,18 A16,16 0 0,1 34,18 L32.24,18 A14.26,14.26 0 0,0 3.76,18 Z"
+              fill="#e8341a"
+            />
+            <path d="M3.76,23 A15,15 0 0,0 32.24,23 Z" fill="#e8e8f2" />
+            <path
+              d="M2,18 A16,16 0 0,0 34,18 L32.24,18 A14.26,14.26 0 0,1 3.76,18 Z"
+              fill="#e8e8f2"
+            />
+            <path
+              d="M18,2 A16,16 0 0,1 34,18 A16,16 0 0,1 18,34 A16,16 0 0,1 2,18 A16,16 0 0,1 18,2 Z"
+              fill="none"
+              stroke="#1a1a2e"
+              stroke-width="1.8"
+            />
+            <rect x="2" y="16.1" width="32" height="3.8" fill="#1a1a2e" />
+            <circle cx="18" cy="18" r="5.5" fill="#1a1a2e" />
+            <circle cx="18" cy="18" r="3.5" fill="#e8e8f2" />
+            <circle cx="18" cy="18" r="1.5" fill="#c0c0cc" />
+            <ellipse
+              cx="12.5"
+              cy="11"
+              rx="2.8"
+              ry="1.8"
+              fill="rgba(255,255,255,0.15)"
+              transform="rotate(-30,12.5,11)"
+            />
+          </svg>
+          <span class="logo-text">POKÉDEX</span>
+          <span class="logo-badge">GEN I</span>
+        </a>
+
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input
+            class="search-input"
+            type="text"
+            id="searchInput"
+            placeholder="Search by name…"
+          />
+        </div>
+
+        <div class="header-controls">
+          <select class="type-select" id="typeFilter">
+            <option value="">All Types</option>
+            <option>Normal</option>
+            <option>Fire</option>
+            <option>Water</option>
+            <option>Electric</option>
+            <option>Grass</option>
+            <option>Ice</option>
+            <option>Fighting</option>
+            <option>Poison</option>
+            <option>Ground</option>
+            <option>Flying</option>
+            <option>Psychic</option>
+            <option>Bug</option>
+            <option>Rock</option>
+            <option>Ghost</option>
+            <option>Dragon</option>
+            <option>Steel</option>
+            <option>Dark</option>
+            <option>Fairy</option>
+          </select>
+          <select class="sort-select" id="sortSelect">
+            <option value="number">Sort: #</option>
+            <option value="name">Sort: A–Z</option>
+            <option value="hp">Sort: HP</option>
+            <option value="atk">Sort: ATK</option>
+            <option value="total">Sort: Total</option>
+          </select>
+          <button
+            class="btn-compare"
+            id="compareBtn"
+            onclick="toggleCompareMode()"
+          >
+            <span>⚔</span><span> Compare</span>
+          </button>
+          <button class="btn-primary" onclick="openAddModal()">
+            <span>+</span> New
+          </button>
+        </div>
+      </div>
+
+      <!-- NAV TABS -->
+      <nav class="header-nav">
+        <button class="nav-tab active" onclick="setTab('all', this)">
+          All <span class="tab-count" id="countAll">—</span>
+        </button>
+        <button class="nav-tab" onclick="setTab('favorites', this)">
+          ❤ Favorites <span class="tab-count" id="countFav">0</span>
+        </button>
+        <button class="nav-tab" onclick="setTab('caught', this)">
+          ✓ Caught <span class="tab-count" id="countCaught">0</span>
+        </button>
+        <button
+          class="nav-tab legendary-tab"
+          onclick="setTab('legendary', this)"
+        >
+          ★ Legendary <span class="tab-count" id="countLegendary">0</span>
+        </button>
+      </nav>
+
+      <!-- STATUS BAR -->
+      <div class="status-bar">
+        <div class="status-pill">
+          <span class="dot" id="apiDot"></span>
+          <span id="apiLabel">Connecting…</span>
+        </div>
+        <div class="status-pill">
+          Showing <span class="val" id="showingCount">—</span>
+        </div>
+        <div class="status-pill">Gen <span class="val">I</span></div>
+        <div class="status-pill">Group <span class="val">10</span></div>
+        <div class="caught-track">
+          <span class="track-label">Completion</span>
+          <div class="track-bar">
+            <div class="track-fill" id="trackFill" style="width: 0%"></div>
+          </div>
+          <span class="track-pct" id="trackPct">0%</span>
+        </div>
+      </div>
+
+      <!-- COMPARE BANNER -->
+      <div class="compare-banner" id="compareBanner">
+        <div class="compare-inner">
+          <span class="compare-label">⚔ Compare</span>
+          <div class="compare-slots">
+            <div class="compare-slot" id="slot0">
+              <span style="font-size: 16px">?</span>
+              <span id="slotLabel0">Pick Pokémon 1</span>
+            </div>
+            <div class="compare-slot" id="slot1">
+              <span style="font-size: 16px">?</span>
+              <span id="slotLabel1">Pick Pokémon 2</span>
+            </div>
+          </div>
+          <button
+            class="btn-go-compare"
+            id="goCompareBtn"
+            onclick="openCompareModal()"
+            disabled
+          >
+            Compare Now
+          </button>
+          <button class="btn-cancel-compare" onclick="cancelCompare()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <main>
+      <div id="pokemonGrid" class="pokemon-grid"></div>
+    </main>
+
+    <!-- ADD / EDIT MODAL -->
+    <div class="modal-overlay" id="formModal">
+      <div class="modal">
+        <div class="modal-inner">
+          <div class="modal-header">
+            <div class="modal-title" id="modalTitle">New Pokémon</div>
+            <button class="modal-close" onclick="closeModal('formModal')">
+              ✕
+            </button>
+          </div>
+          <input type="hidden" id="editId" />
+
+          <div class="form-section">Identity</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Pokédex #</label>
+              <input
+                class="form-input"
+                id="fNumber"
+                type="number"
+                placeholder="001"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              <input class="form-input" id="fName" placeholder="Pikachu" />
+            </div>
+          </div>
+
+          <div class="form-section">Classification</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Primary Type</label>
+              <select class="form-input" id="fType">
+                <option value="">— Select —</option>
+                <option>Normal</option>
+                <option>Fire</option>
+                <option>Water</option>
+                <option>Electric</option>
+                <option>Grass</option>
+                <option>Ice</option>
+                <option>Fighting</option>
+                <option>Poison</option>
+                <option>Ground</option>
+                <option>Flying</option>
+                <option>Psychic</option>
+                <option>Bug</option>
+                <option>Rock</option>
+                <option>Ghost</option>
+                <option>Dragon</option>
+                <option>Steel</option>
+                <option>Dark</option>
+                <option>Fairy</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Secondary Type</label>
+              <select class="form-input" id="fType2">
+                <option value="">— None —</option>
+                <option>Normal</option>
+                <option>Fire</option>
+                <option>Water</option>
+                <option>Electric</option>
+                <option>Grass</option>
+                <option>Ice</option>
+                <option>Fighting</option>
+                <option>Poison</option>
+                <option>Ground</option>
+                <option>Flying</option>
+                <option>Psychic</option>
+                <option>Bug</option>
+                <option>Rock</option>
+                <option>Ghost</option>
+                <option>Dragon</option>
+                <option>Steel</option>
+                <option>Dark</option>
+                <option>Fairy</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section">Measurements</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Height (m)</label>
+              <input
+                class="form-input"
+                id="fHeight"
+                type="number"
+                step="0.1"
+                placeholder="0.4"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Weight (kg)</label>
+              <input
+                class="form-input"
+                id="fWeight"
+                type="number"
+                step="0.1"
+                placeholder="6.0"
+              />
+            </div>
+          </div>
+
+          <div class="form-section">Base Stats</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">HP</label>
+              <input
+                class="form-input"
+                id="fHp"
+                type="number"
+                placeholder="35"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Attack</label>
+              <input
+                class="form-input"
+                id="fAttack"
+                type="number"
+                placeholder="55"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Defense</label>
+              <input
+                class="form-input"
+                id="fDefense"
+                type="number"
+                placeholder="40"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Speed</label>
+              <input
+                class="form-input"
+                id="fSpeed"
+                type="number"
+                placeholder="90"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Sp. Atk</label>
+              <input
+                class="form-input"
+                id="fSpAtk"
+                type="number"
+                placeholder="50"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sp. Def</label>
+              <input
+                class="form-input"
+                id="fSpDef"
+                type="number"
+                placeholder="50"
+              />
+            </div>
+          </div>
+
+          <div class="form-section">Flags</div>
+          <div class="form-check">
+            <span class="legendary-dot"></span>
+            <input type="checkbox" id="fLegendary" />
+            <label for="fLegendary">Mark as Legendary</label>
+          </div>
+
+          <div class="form-section">Description</div>
+          <div class="form-group">
+            <textarea
+              class="form-input"
+              id="fDesc"
+              rows="3"
+              placeholder="Pokédex entry…"
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-ghost" onclick="closeModal('formModal')">
+              Cancel
+            </button>
+            <button class="btn-confirm" onclick="savePokemon()">
+              Save Pokémon
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAIL MODAL -->
+    <div class="modal-overlay" id="detailModal">
+      <div class="modal" style="max-width: 480px">
+        <div class="modal-inner">
+          <div class="modal-header">
+            <div class="modal-title">Pokédex Entry</div>
+            <button class="modal-close" onclick="closeModal('detailModal')">
+              ✕
+            </button>
+          </div>
+          <div id="detailContent"></div>
+          <div
+            class="modal-actions"
+            style="
+              padding-top: 16px;
+              border-top: 1px solid var(--line);
+              margin-top: 0;
+            "
+          >
+            <button class="btn-ghost" onclick="closeModal('detailModal')">
+              Close
+            </button>
+            <button class="btn-confirm" id="detailEditBtn">Edit Entry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARE MODAL -->
+    <div class="modal-overlay" id="compareModal">
+      <div class="compare-modal-wrap">
+        <div class="cmp-header">
+          <div>
+            <div class="cmp-title">Battle Analysis</div>
+            <div class="cmp-sub">STAT-BY-STAT BREAKDOWN</div>
+          </div>
+          <button class="modal-close" onclick="closeModal('compareModal')">
+            ✕
+          </button>
+        </div>
+        <div class="adv-bar" id="advBar">
+          <div class="adv-seg adv-seg-left" id="advLeft" style="flex: 1">—</div>
+          <div
+            class="adv-seg adv-seg-tie"
+            id="advTie"
+            style="flex: 0; display: none"
+          >
+            —
+          </div>
+          <div class="adv-seg adv-seg-right" id="advRight" style="flex: 1">
+            —
+          </div>
+        </div>
+        <div id="compareContent" class="cmp-body"></div>
+        <div class="cmp-footer">
+          <button class="btn-ghost" onclick="closeModal('compareModal')">
+            Close
+          </button>
+          <button
+            class="btn-confirm"
+            onclick="
+              closeModal('compareModal');
+              cancelCompare();
+            "
+          >
+            New Comparison
+          </button>
+        </div>
+      </div>
+    </div>
+
+   <!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <div class="modal-title">Delete Pokémon</div>
+        <button class="modal-close" onclick="closeModal('deleteModal')">
+          ✕
+        </button>
+      </div>
+
+      <p id="deleteText" style="margin:20px 0;">
+        Are you sure you want to delete this Pokémon?
+      </p>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeModal('deleteModal')">
+          Cancel
+        </button>
+
+        <button
+          class="btn-confirm"
+          style="background:#dc2626;"
+          id="confirmDeleteBtn"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
